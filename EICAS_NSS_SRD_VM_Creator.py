@@ -17,12 +17,15 @@ def main():
     for (dirpath, dirnames, filenames) in walk("C:\\Users\\logans\\Documents\\Eclipse Projects\\EICAS_SRD_VM_Creator\\src\\Test_SRDs"):
         SRD_document_list.extend(filenames)
         break
-     
+    
+    print("\n\n ** LIST OF SRD DOCUMENTS FOR PARSING ** \n\n") 
     for idx in range(0,len(SRD_document_list)):
         print(str(SRD_document_list[idx]))
     
     trace_matrix_wb = Workbook()
      
+    print("\n\n ** SRD DOC PARSING OUTPUT ** \n\n") 
+    
     count = 0
     for file_idx in range(0,len(SRD_document_list)):
         
@@ -48,18 +51,28 @@ def main():
                 data_excel_coord = "A" + str(count)
                 data_excel_text_coord = "B" + str(count)
                 if count == 1:
+                    # add a header to the excel worksheet before parsing data
+                    # it's ugly, don't make fun of me
                     tm_active[data_excel_coord] = "Requirement Number"
                     tm_active[data_excel_text_coord] = "Requirement Text"
-                else:
+                    tm_active["C1"] = "EICAS Definition Tag"
+                    tm_active["D1"] = "Notes"
+                    
+                    count += 1
+                    
+                    # now that the header is taken care of, populate the data:
+                    data_excel_coord = "A" + str(count)
+                    data_excel_text_coord = "B" + str(count)
                     req_num = doc.paragraphs[idx].text
                     req_text = doc.paragraphs[idx+1].text
                     tm_active[data_excel_coord] = req_num
                     tm_active[data_excel_text_coord] = req_text
-                 
-                # following statements are only for debug:
-                #print(req_num)
-                #print(req_text)
-                #print(data_excel_coord)
+                else:
+                    # no need to print header info after it's been printed once
+                    req_num = doc.paragraphs[idx].text
+                    req_text = doc.paragraphs[idx+1].text
+                    tm_active[data_excel_coord] = req_num
+                    tm_active[data_excel_text_coord] = req_text
      
         count = 0
      
@@ -68,8 +81,8 @@ def main():
     trace_matrix_wb.remove_sheet(delete_sheet)
     
     
-    trace_matrix_wb.save("EICAS_V8_to_NSS_SRD_TM.xlsx")
-    print("EICAS_V8_to_NSS_SRD_TM.xlsx saved and closed")
+    trace_matrix_wb.save("EICAS_V8_to_NSS_SRD_Trace_Matrix.xlsx")
+    print("EICAS_V8_to_NSS_SRD_Trace_Matrix.xlsx saved and closed")
      
     
 main()
