@@ -45,8 +45,16 @@ def main():
         
         # this for loop searches every paragraph in the doc object for the text "EICAS"
         # if it finds it, it adds it to a new row of the trace matrix
-        for idx in range(0,len(doc.paragraphs)):
-            if "_EICAS_" in doc.paragraphs[idx].text: 
+        for idx in range(0,len(doc.paragraphs)):            
+            # Note: Some requirement tags had spaces around the EICAS string (like this: "_ EICAS_" or "_EICAS  _"
+            # these strings were not found in the search, so req_num_no_whitespace is designed to remove any whitespace
+            # before the string is checked for "_EICAS_"
+            req_num_no_whitespace = str(doc.paragraphs[idx].text)
+            
+            while ' ' in req_num_no_whitespace:                
+                req_num_no_whitespace = req_num_no_whitespace.replace(' ','')
+                
+            if "_EICAS_" in req_num_no_whitespace: 
                 count += 1       
                 data_excel_coord = "A" + str(count)
                 data_excel_text_coord = "B" + str(count)
@@ -55,8 +63,9 @@ def main():
                     # it's ugly, don't make fun of me
                     tm_active[data_excel_coord] = "Requirement Number"
                     tm_active[data_excel_text_coord] = "Requirement Text"
-                    tm_active["C1"] = "EICAS Definition Tag"
-                    tm_active["D1"] = "Notes"
+                    tm_active["C1"] = "EICAS Section Name"
+                    tm_active["D1"] = "EICAS Definition Tag"
+                    tm_active["E1"] = "Notes"
                     
                     count += 1
                     
